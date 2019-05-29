@@ -40,9 +40,9 @@ room['treasure'].s_to = room['narrow']
 
 # Make a new player object that is currently in the 'outside' room.
 
-jake = Player('Jacobus the Tall', 'outside')
+jake = Player('Jacobus the Tall', room['outside'])
 
-print(jake.created_at)
+print(jake.room.n_to.name)
 
 # Write a loop that:
 #
@@ -56,12 +56,12 @@ print(jake.created_at)
 # If the user enters "q", quit the game.
 
 
-def check_direction(dir, room):
+def check_direction(dir, player):
     try:
-        if (dir == 'n' and room.n_to) or\
-           (dir == 'e' and room.e_to) or\
-           (dir == 's' and room.s_to) or\
-           (dir == 'w' and room.w_to):
+        if ((dir == 'n' or dir == 'ln') and player.room.n_to) or\
+           ((dir == 'e' or dir == 'le') and player.room.e_to) or\
+           ((dir == 's' or dir == 'ls') and player.room.s_to) or\
+           ((dir == 'w' or dir == 'lw') and player.room.w_to):
             return 1
         else:
             raise Exception
@@ -69,17 +69,41 @@ def check_direction(dir, room):
         return 0
 
 
+def change_location(dir, player):
+    if dir == 'n':
+        player.room = player.room.n_to
+    #     player.location = current_room.n_to.name
+    # elif dir == 'e':
+    #     player.location = current_room.e_to.name
+    # elif dir == 's':
+    #     player.location = current_room.s_to.name
+    # elif dir == 'w':
+    #     player.location = current_room.w_to.name
+
+
 def start_game(player):
     print('\n\n    ----------------------\n    |WELCOME TO THE THING|\n    ----------------------')
-    current_room = room[player.location]
     while True:
         print(
-            f'\n    location: {current_room.name}\n\n    description: {current_room.description}\n')
-        player_input = input('    press q to quit')
+            f'\n    location: {player.room.name}\n\n    description: {player.room.description}\n')
+        player_input = input(
+            '    cmds: n, e, s, w, ln, le, ls, lw\n\n    press q to quit\n\n--> ')
         if player_input == 'q':
             break
-        elif check_direction(player_input, current_room) == 1:
-            print('\n        you can go there')
+        elif check_direction(player_input, player) == 1:
+            if len(player_input) == 1:
+                if player_input == 'n':
+                    player.room = player.room.n_to
+                elif player_input == 'e':
+                    player.room = player.room.e_to
+                elif player_input == 's':
+                    player.room = player.room.s_to
+                elif player_input == 'w':
+                    player.room = player.room.w_to
+            else:
+                print('\n        you can go there')
+        else:
+            print('\n        you can not go there')
 
 
 start_game(jake)

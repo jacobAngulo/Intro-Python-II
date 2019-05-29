@@ -6,6 +6,6 @@ from datetime import datetime
 class Player:
     created_at = datetime.now()
 
-    def __init__(self, name, location):
+    def __init__(self, name, room):
         self.name = name
-        self.location = location
+        self.room = room
