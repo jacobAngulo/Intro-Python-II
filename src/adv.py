@@ -1,10 +1,11 @@
 from room import Room
+from player import Player
 
 # Declare all the rooms
 
 room = {
     'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mount beckons"),
+                     "North of you, the cave mouth beckons"),
 
     'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
@@ -39,6 +40,10 @@ room['treasure'].s_to = room['narrow']
 
 # Make a new player object that is currently in the 'outside' room.
 
+jake = Player('Jacobus the Tall', 'outside')
+
+print(jake.created_at)
+
 # Write a loop that:
 #
 # * Prints the current room name
@@ -49,3 +54,32 @@ room['treasure'].s_to = room['narrow']
 # Print an error message if the movement isn't allowed.
 #
 # If the user enters "q", quit the game.
+
+
+def check_direction(dir, room):
+    try:
+        if (dir == 'n' and room.n_to) or\
+           (dir == 'e' and room.e_to) or\
+           (dir == 's' and room.s_to) or\
+           (dir == 'w' and room.w_to):
+            return 1
+        else:
+            raise Exception
+    except:
+        return 0
+
+
+def start_game(player):
+    print('\n\n    ----------------------\n    |WELCOME TO THE THING|\n    ----------------------')
+    current_room = room[player.location]
+    while True:
+        print(
+            f'\n    location: {current_room.name}\n\n    description: {current_room.description}\n')
+        player_input = input('    press q to quit')
+        if player_input == 'q':
+            break
+        elif check_direction(player_input, current_room) == 1:
+            print('\n        you can go there')
+
+
+start_game(jake)
