@@ -4,24 +4,33 @@ from player import Player
 # Declare all the rooms
 
 room = {
-    'outside':  Room("Outside Cave Entrance",
-                     "North of you, the cave mouth beckons"),
-
-    'foyer':    Room("Foyer", """Dim light filters in from the south. Dusty
+    'outside':
+    Room("Outside Cave Entrance", "North of you, the cave mouth beckons"),
+    'foyer':
+    Room(
+        "Foyer", """Dim light filters in from the south. Dusty
 passages run north and east."""),
-
-    'overlook': Room("Grand Overlook", """A steep cliff appears before you, falling
+    'overlook':
+    Room(
+        "Grand Overlook", """A steep cliff appears before you, falling
 into the darkness. Ahead to the north, a light flickers in
 the distance, but there is no way across the chasm."""),
-
-    'narrow':   Room("Narrow Passage", """The narrow passage bends here from west
+    'narrow':
+    Room(
+        "Narrow Passage", """The narrow passage bends here from west
 to north. The smell of gold permeates the air."""),
-
-    'treasure': Room("Treasure Chamber", """You've found the long-lost treasure
+    'treasure':
+    Room(
+        "Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
 earlier adventurers. The only exit is to the south."""),
 }
 
+room['outside'].items = ['rotting wooden shield']
+room['foyer'].items = ['sweet roll', 'silver chalice', 'coin purse']
+room['overlook'].items = ['sword of a thousand truths', 'pebble']
+room['narrow'].items = ['human skull']
+room['treasure'].items = ['gold coin', 'tuft of fur']
 
 # Link rooms together
 
@@ -41,6 +50,8 @@ room['treasure'].s_to = room['narrow']
 # Make a new player object that is currently in the 'outside' room.
 
 jake = Player('Jacobus the Tall', room['outside'])
+
+jake.items = ['sturdy tunic', 'steel sward']
 
 print(jake.room.n_to.name)
 
@@ -72,34 +83,44 @@ def check_direction(dir, player):
 def change_location(dir, player):
     if dir == 'n':
         player.room = player.room.n_to
-    #     player.location = current_room.n_to.name
-    # elif dir == 'e':
-    #     player.location = current_room.e_to.name
-    # elif dir == 's':
-    #     player.location = current_room.s_to.name
-    # elif dir == 'w':
-    #     player.location = current_room.w_to.name
+    elif dir == 'e':
+        player.room = player.room.e_to
+    elif dir == 's':
+        player.room = player.room.s_to
+    elif dir == 'w':
+        player.room = player.room.w_to
 
 
 def start_game(player):
-    print('\n\n    ----------------------\n    |WELCOME TO THE THING|\n    ----------------------')
+    print(
+        '\n\n    ----------------------\n    |WELCOME TO THE THING|\n    ----------------------'
+    )
     while True:
         print(
-            f'\n    location: {player.room.name}\n\n    description: {player.room.description}\n')
+            f'\n    location: {player.room.name}\n\n    description: {player.room.description}\n'
+        )
         player_input = input(
-            '    cmds: n, e, s, w, ln, le, ls, lw\n\n    press q to quit\n\n--> ')
+            '    cmds: n, e, s, w, ln, le, ls, lw, ri, pi, pu [item], d [item]\n\n    press q to quit\n\n--> '
+        )
         if player_input == 'q':
             break
+        elif player_input == 'ri':
+            print('\n    room items:')
+            for x in player.room.items:
+                print(f'\n    -{x}')
+        elif player_input == 'pi':
+            print('\n    player items:')
+            for x in player.items:
+                print(f'\n    -{x}')
+        elif player_input.split(' ')[0] == 'pu':
+            if player_input[3:] in player.room.items:
+                player.pick_up(player_input[3:])
+                print(f'\n    you picked up {player_input[3:]}')
+            else:
+                print(f'\n    there is no {player_input[3:]} in this room')
         elif check_direction(player_input, player) == 1:
             if len(player_input) == 1:
-                if player_input == 'n':
-                    player.room = player.room.n_to
-                elif player_input == 'e':
-                    player.room = player.room.e_to
-                elif player_input == 's':
-                    player.room = player.room.s_to
-                elif player_input == 'w':
-                    player.room = player.room.w_to
+                change_location(player_input, player)
             else:
                 print('\n        you can go there')
         else:
