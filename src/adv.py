@@ -1,36 +1,55 @@
 from room import Room
 from player import Player
+from item import Item
 
 # Declare all the rooms
 
 room = {
-    'outside':
-    Room("Outside Cave Entrance", "North of you, the cave mouth beckons"),
-    'foyer':
-    Room(
-        "Foyer", """Dim light filters in from the south. Dusty
-passages run north and east."""),
-    'overlook':
-    Room(
-        "Grand Overlook", """A steep cliff appears before you, falling
-into the darkness. Ahead to the north, a light flickers in
-the distance, but there is no way across the chasm."""),
+    'outside': Room(
+        "Outside Cave Entrance", "North of you, the cave mouth beckons", [
+            Item('shield', 'rotting wooden shield',
+                 'who would protect themeselves with such a thing', 2, False)
+        ], True),
+    'foyer': Room(
+        "Foyer", """Dim light filters in from the south. Dusty passages run north and east.""", [
+            Item('food', 'sweet roll',
+                 'a rare dessert enjoyed in the north', 1, False),
+            Item('misc', 'silver chalice',
+                 'suiteable for lords and thieves', 40, False),
+            Item('currency', 'coin purse', 'treat yo self 2019', 20, False)
+        ], True),
+    'overlook': Room(
+        "Grand Overlook", """A steep cliff appears before you, falling into the darkness. Ahead to the north, a light flickers in the distance, but there is no way across the chasm.""", [
+            Item('weapon', 'sword of a thousand truths',
+                 'razor sharp and vibrates in your hand', 10000, False),
+            Item('misc', 'pebble', 'a pebble', 0, False),
+            Item('utility', 'rusty lantern',
+                 'the light is dim but it works', 5, True)
+        ], True),
     'narrow':
     Room(
         "Narrow Passage", """The narrow passage bends here from west
-to north. The smell of gold permeates the air."""),
+to north. The smell of gold permeates the air.""", [
+            Item(
+                'misc', 'human skull', 'looks like they had good dental hygiene at least', 5, False)
+        ], False),
     'treasure':
     Room(
         "Treasure Chamber", """You've found the long-lost treasure
 chamber! Sadly, it has already been completely emptied by
-earlier adventurers. The only exit is to the south."""),
+earlier adventurers. The only exit is to the south.""", [
+            Item(
+                'currency', 'gold coin', 'a single coin', 1, False),
+            Item(
+                'misc', 'tuft of fur', 'from an animal.. probably', 5, False)
+        ], False),
 }
 
-room['outside'].items = ['rotting wooden shield']
-room['foyer'].items = ['sweet roll', 'silver chalice', 'coin purse']
-room['overlook'].items = ['sword of a thousand truths', 'pebble']
-room['narrow'].items = ['human skull']
-room['treasure'].items = ['gold coin', 'tuft of fur']
+# room['outside'].items = ['rotting wooden shield']
+# room['foyer'].items = ['sweet roll', 'silver chalice', 'coin purse']
+# room['overlook'].items = ['sword of a thousand truths', 'pebble']
+# room['narrow'].items = ['human skull']
+# room['treasure'].items = ['gold coin', 'tuft of fur']
 
 # Link rooms together
 
@@ -49,11 +68,17 @@ room['treasure'].s_to = room['narrow']
 
 # Make a new player object that is currently in the 'outside' room.
 
-jake = Player('Jacobus the Tall', room['outside'])
+player = Player(
+    input('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n    what is your name?\n--> '), room['outside'], [Item(
+        'clothing', 'thick wool tunic', 'a good tunic for daily needs', 15, False), Item(
+        'weapon', 'steel sword', 'a good sword, for a peasant', 10, False)])
 
-jake.items = ['sturdy tunic', 'steel sward']
-
-print(jake.room.n_to.name)
+welcome_message = f'\n\n----\n    |WELCOME, {(player.name).upper()}, TO THE THING|'
+welcome_message += '\n----\n\n    '
+welcome_message += 'cmds: n, e, s, w, ln, le, ls, lw, ri, pi, pu [item], d [item]'
+welcome_message += '\n\n    press q to quit\n\n'
+welcome_message += f'{player.current_room}\n\n'
+print(welcome_message)
 
 # Write a loop that:
 #
@@ -67,64 +92,24 @@ print(jake.room.n_to.name)
 # If the user enters "q", quit the game.
 
 
-def check_direction(dir, player):
-    try:
-        if ((dir == 'n' or dir == 'ln') and player.room.n_to) or\
-           ((dir == 'e' or dir == 'le') and player.room.e_to) or\
-           ((dir == 's' or dir == 'ls') and player.room.s_to) or\
-           ((dir == 'w' or dir == 'lw') and player.room.w_to):
-            return 1
-        else:
-            raise Exception
-    except:
-        return 0
-
-
-def change_location(dir, player):
-    if dir == 'n':
-        player.room = player.room.n_to
-    elif dir == 'e':
-        player.room = player.room.e_to
-    elif dir == 's':
-        player.room = player.room.s_to
-    elif dir == 'w':
-        player.room = player.room.w_to
-
-
 def start_game(player):
-    print(
-        '\n\n    ----------------------\n    |WELCOME TO THE THING|\n    ----------------------'
-    )
     while True:
-        print(
-            f'\n    location: {player.room.name}\n\n    description: {player.room.description}\n'
-        )
-        player_input = input(
-            '    cmds: n, e, s, w, ln, le, ls, lw, ri, pi, pu [item], d [item]\n\n    press q to quit\n\n--> '
-        )
-        if player_input == 'q':
+        cmd = input('\n\n--> ')
+        if cmd is 'q':
             break
-        elif player_input == 'ri':
-            print('\n    room items:')
-            for x in player.room.items:
-                print(f'\n    -{x}')
-        elif player_input == 'pi':
-            print('\n    player items:')
-            for x in player.items:
-                print(f'\n    -{x}')
-        elif player_input.split(' ')[0] == 'pu':
-            if player_input[3:] in player.room.items:
-                player.pick_up(player_input[3:])
-                print(f'\n    you picked up {player_input[3:]}')
+        elif cmd in ['n', 'e', 's', 'w']:
+            player.traverse(cmd)
+        elif cmd in ['ri', 'room items']:
+            player.current_room.print_items()
+        elif cmd in ['i', 'inventory']:
+            player.print_inventory()
+        elif cmd[:8] == 'pick up ' or cmd[:3] == 'pu ':
+            print('works')
+            if cmd[:7] == 'pick up':
+                cmd = cmd[8:]
+                player.pick_up(cmd)
             else:
-                print(f'\n    there is no {player_input[3:]} in this room')
-        elif check_direction(player_input, player) == 1:
-            if len(player_input) == 1:
-                change_location(player_input, player)
-            else:
-                print('\n        you can go there')
-        else:
-            print('\n        you can not go there')
+                player.pick_up(cmd[3:])
 
 
-start_game(jake)
+start_game(player)
