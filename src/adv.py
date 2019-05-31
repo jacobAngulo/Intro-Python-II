@@ -69,7 +69,7 @@ room['treasure'].s_to = room['narrow']
 # Make a new player object that is currently in the 'outside' room.
 
 player = Player(
-    input('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n    what is your name?\n--> '), room['outside'], [Item(
+    input('\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n\n    what is your name?\n--> '), room['outside'], [Item(
         'clothing', 'thick wool tunic', 'a good tunic for daily needs', 15, False), Item(
         'weapon', 'steel sword', 'a good sword, for a peasant', 10, False)])
 
@@ -104,12 +104,15 @@ def start_game(player):
         elif cmd in ['i', 'inventory']:
             player.print_inventory()
         elif cmd[:8] == 'pick up ' or cmd[:3] == 'pu ':
-            print('works')
             if cmd[:7] == 'pick up':
-                cmd = cmd[8:]
-                player.pick_up(cmd)
+                player.pick_up(cmd[8:])
             else:
                 player.pick_up(cmd[3:])
+        elif cmd[:5] == 'drop ' or cmd[:2] == 'd ':
+            if cmd[:4] == 'drop':
+                player.drop(cmd[5:])
+            else:
+                player.drop(cmd[2:])
 
 
 start_game(player)

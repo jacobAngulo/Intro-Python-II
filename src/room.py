@@ -43,5 +43,8 @@ class Room:
         return ', '.join(exits)
 
     def print_items(self):
-        for x in self.items:
-            print(f'\n  - {x.name}')
+        if len(self.items) == 0:
+            print('\n  there is nothing in here')
+        else:
+            for x in self.items:
+                print(f'\n  - {x.name}')
